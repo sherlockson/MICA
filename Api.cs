@@ -4,11 +4,11 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using CT_API_GUI;
 using Geolocation;
+
 // ReSharper disable LocalizableElement
 
-namespace ConsoleAFMApi
+namespace MICA
 {
     /**
      * @class Api - The class containing all necessary methods and information needed to collect, parse, and pass
@@ -206,7 +206,7 @@ namespace ConsoleAFMApi
                 {
                     Console.WriteLine($"Updating interval: {interval.interval_id}");
                     //Collect updated interval results and save as a string
-                    var updatedIntervalResults = await CT_API_GUI.HttpCalls.IntervalHttpCall(interval.interval_id);
+                    var updatedIntervalResults = await HttpCalls.IntervalHttpCall(interval.interval_id);
                     //Parse JSON string object and save the completions in the interval object
                     interval.completes = interval.ParseIntervalResults(updatedIntervalResults);
 
@@ -350,7 +350,7 @@ namespace ConsoleAFMApi
                 //Initialize global list
                 racerList = new List<entry>();
                 //Fetch JSON from CT API website
-                var responseBody = await CT_API_GUI.HttpCalls.HttpCaller(PeopleUrl);
+                var responseBody = await HttpCalls.HttpCaller(PeopleUrl);
                 //Pass to runner parser function
                 racerList = entry.ParseRunners(responseBody);
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -376,7 +376,7 @@ namespace ConsoleAFMApi
                 //Initialize global list
                 intervalList = new List<interval>();
                 //Fetch JSON object from CT API
-                var responseBody = await CT_API_GUI.HttpCalls.HttpCaller(EventIntervalUrl);
+                var responseBody = await HttpCalls.HttpCaller(EventIntervalUrl);
                 //Pass to interval parser and set global list to return of function
                 intervalList = interval.GetIntervalIds(responseBody);
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -402,7 +402,7 @@ namespace ConsoleAFMApi
                 //Initialize global list
                 raceList = new List<race>();
                 //Fetch JSON object from CT API
-                var responseBody = await CT_API_GUI.HttpCalls.HttpCaller(RaceUrl);
+                var responseBody = await HttpCalls.HttpCaller(RaceUrl);
                 //Pass to race parser and set global list as return of the function
                 raceList = race.ParseRaces(responseBody);
                 Console.ForegroundColor = ConsoleColor.Green;

@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace CT_API_GUI
+namespace MICA
 {
     /**
      * @class HttpCalls - class containing all API caller functions to collect JSON strings from CT API website

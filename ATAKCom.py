@@ -12,8 +12,8 @@ import pytak
 from pytak import pycot
 
 # Server info for CEDER marathon
-os.environ['client_cert'] = r"C:\Users\pixel\RiderProjects\ConsoleAFMApi\ceder.pem"
-os.environ['client_key'] = r"C:\Users\pixel\RiderProjects\ConsoleAFMApi\ceder.key"
+os.environ['client_cert'] = r"C:\Users\pixel\RiderProjects\MICA\ceder.pem"
+os.environ['client_key'] = r"C:\Users\pixel\RiderProjects\MICA\ceder.key"
 
 cot_multicast_url: urllib.parse.ParseResult = urllib.parse.urlparse("udp:239.2.3.1:6969")
 cot_server_url: urllib.parse.ParseResult = urllib.parse.urlparse("ssl:52.222.45.68:8089")

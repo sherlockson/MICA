@@ -5,4 +5,17 @@
         <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Geolocation" Version="1.2.1" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="pytak\.idea\.gitignore" />
+      <Content Include="pytak\.idea\inspectionProfiles\profiles_settings.xml" />
+      <Content Include="pytak\.idea\misc.xml" />
+      <Content Include="pytak\.idea\modules.xml" />
+      <Content Include="pytak\.idea\pytak.iml" />
+    </ItemGroup>
+
 </Project>

@@ -4,7 +4,7 @@ using System.Linq;
 using Geolocation;
 using Newtonsoft.Json.Linq;
 
-namespace CT_API_GUI
+namespace MICA
 {
     /*
          * @Class - interval

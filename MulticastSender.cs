@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace CT_API_GUI
+namespace MICA
 {
     /**
    * @class MulticastSender - class containing all methods needed to create the multicast group and send multicast messages
