@@ -5,10 +5,10 @@ import uuid
 
 import gexml
 
-__author__ = "Greg Albrecht W2GMD <oss@undef.net>"
-__copyright__ = "Copyright 2020 Orion Labs, Inc."
-__license__ = "Apache License, Version 2.0"
-
+test_chat = """
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<event version="2.0" uid="GeoChat.FFF-1" type="b-t-f" time="2020-11-15T07:40:58.816Z" start="2020-11-15T07:40:58.816Z" stale="2020-11-16T07:40:58.816Z" how="h-g-i-g-o"><point lat="0.0" lon="0.0" hae="9999999.0" ce="9999999.0" le="9999999.0"/><detail><link uid="AAA-1" type="a-f-G-U-C" relation="p-p"/><__chat parent="RootContactGroup" groupOwner="false" chatroom="All Chat Rooms" id="All Chat Rooms" senderCallsign="FFF-1"><chatgrp uid0="FFF-1" uid1="All Chat Rooms" id="All Chat Rooms"/></__chat><remarks source="FFF-1" to="All Chat Rooms" time="2020-11-15T07:40:58.816Z">FFF-1</remarks><__serverdestination destinations="172.17.2.246:8087:tcp:FFF-1"/></detail></event>
+"""
 
 class Point(gexml.Model):
     """CoT Point"""
@@ -180,8 +180,3 @@ class DataEventType(EventType):  # pylint: disable=too-few-public-methods
     """CoT DataEventType"""
     describes = 'Data'
     type_fields = ['_describes', 'dimension']
-
-test_chat = """
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<event version="2.0" uid="GeoChat.FFF-1" type="b-t-f" time="2020-11-15T07:40:58.816Z" start="2020-11-15T07:40:58.816Z" stale="2020-11-16T07:40:58.816Z" how="h-g-i-g-o"><point lat="0.0" lon="0.0" hae="9999999.0" ce="9999999.0" le="9999999.0"/><detail><link uid="AAA-1" type="a-f-G-U-C" relation="p-p"/><__chat parent="RootContactGroup" groupOwner="false" chatroom="All Chat Rooms" id="All Chat Rooms" senderCallsign="FFF-1"><chatgrp uid0="FFF-1" uid1="All Chat Rooms" id="All Chat Rooms"/></__chat><remarks source="FFF-1" to="All Chat Rooms" time="2020-11-15T07:40:58.816Z">FFF-1</remarks><__serverdestination destinations="172.17.2.246:8087:tcp:FFF-1"/></detail></event>
-"""
