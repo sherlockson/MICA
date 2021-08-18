@@ -7,17 +7,45 @@ import datetime
 import ATAKXML
 import client_functions
 import ATAKSenders
+from multiprocessing import Process
+
+testString = b'lat: 39.825297 lon: -84.027601 uid: point 2 how: h-g-i-g-o link_type: a-f-G-I-B remarks: 200.00% argb: -256 iconsetpath: f7f71666-8b28-4b57-9fbb-e38e61d33b79/Google/flag.png'
+dataList = []
+
+MCAST_GRP = '239.2.3.1'
+MCAST_PORT = 6969
+IS_ALL_GROUPS = True
+SSL_GRP = '52.222.45.68'
+SSL_PORT = 8089
+
+RECV = "MCAST"
+SEND = "SSL"
 
 # Message to be sent if no Data is passed for cot_builder
 DATA = "this is a filler constant"
-
-testString = b'lat: 39.825297 lon: -84.027601 uid: point 2 how: h-g-i-g-o link_type: a-f-G-I-B remarks: 200.00% argb: -65536 iconsetpath: COT_MAPPING_SPOTMAP/b-m-p-s-m/-256'
-dataList = []
 
 
 # Builds a Cot Message from variables passed, will use defaults if any are not passed.
 def cot_builder(lat=None, lon=None, how=None, event_type=None, uid=None, link_type=None, msg_remarks=None,
                 contact_callsign=None, iconsetpath=None, argb=None):
+    """
+    Builds a XML event in COT format. Default values are provided for any parameters not passed.
+    Default uses standard values, in order to create messages with Custom Icons, you will need the additional values
+    for those messages. If you do not, just leave them as None.
+
+    :param lat: GEO latitude value.
+    :param lon: GEO longitude value.
+    :param how: Change color for standard COT messages.
+    :param event_type: COT Atom value, changes image for standard COT Icons.
+    :param uid: Name/ID for Cot message, will be displayed point name on ATAK messages.
+    :param link_type: additional type information needed for custom message icon types.
+    :param msg_remarks: Data, or information that is shown in details portion of cot message.
+    :param contact_callsign: used for non standard COT icons, sets type to custom.
+    :param iconsetpath: used for non standard COT icons, produces image at given address.
+    :param argb: changes color of icon.
+    :return: evt: COT XML message
+    """
+
     time = datetime.datetime.now()
 
     _keys = [
@@ -104,6 +132,14 @@ def cot_builder(lat=None, lon=None, how=None, event_type=None, uid=None, link_ty
 
 # Will parse byte message to Str using spaces and generic titles for COT data
 def dataParser(data):
+    """
+    Decodes data received by client communication. First decoded from byte to str, then parsed for variable
+    names and values. Finally calls cot_builder to create event using variables as parameters. If a value is not part
+    of the messages will pass values as None.
+
+    :param data: byte stream received from client connection.
+    :return: evt: COT XML message
+    """
     try:
         # if data is bytes:
         decodeD = data.decode('utf-8')
@@ -163,38 +199,46 @@ def dataParser(data):
 
         evt = cot_builder(lat, lon, how, event_type, uid, link_type, remarks, callsign, iconsetpath, argb)
         return evt
-    # except ValueError:
-    #     print("Not enough information for COT Message")
-    #     pass
     except AttributeError:
         pass
     except UnicodeDecodeError:
         pass
 
 
-def MailMan(dataList, SEND, MCAST_GRP, MCAST_PORT, IS_ALL_GROUPS, sock):
-    while True:
-        if len(dataList) > 0:
-            if SEND == "SSL":
-                for msg in dataList:
-                    print("Sending on SSL")
-                    asyncio.run(ATAKSenders.SSLCoTSender(msg))
-                    dataList.remove(msg)
-            elif SEND == "MCAST":
-                for msg in dataList:
-                    print("Sending on Multicast")
-                    asyncio.run(ATAKSenders.MCASTCoTSender(msg, MCAST_GRP, MCAST_PORT, IS_ALL_GROUPS, sock))
-                    dataList.remove(msg)
-        else:
-            pass
+def MailMan():
+    """
+    Takes messages added to the dataList array and sends them Via specified Client connection till the list is empty.
+    """
+    if len(dataList) > 0:
+        if SEND == "SSL":
+            for msg in dataList:
+                print("Sending on SSL")
+                asyncio.run(ATAKSenders.SSLCoTSender(msg,SSL_PORT,SSL_GRP))
+                dataList.remove(msg)
+        elif SEND == "MCAST":
+            for msg in dataList:
+                print("Sending on Multicast")
+                sock = client_functions.connect_MCAST(MCAST_GRP, MCAST_PORT, IS_ALL_GROUPS)
+                asyncio.run(ATAKSenders.MCASTCoTSender(msg, MCAST_GRP, MCAST_PORT, IS_ALL_GROUPS, sock))
+                dataList.remove(msg)
+    else:
+        pass
 
 
-def main(MCAST_GRP, MCAST_PORT, IS_ALL_GROUPS, RECV, SEND):
+def main():
+    """
+    Main function that creates a receiver and Sender. Messages received are added to a datalist and sent to the Mailman
+    function to send using the specified method.
+    """
+
     if RECV == "MCAST":
         sock = client_functions.connect_MCAST(MCAST_GRP, MCAST_PORT, IS_ALL_GROUPS)
     elif RECV == "LHOST":
         print("Connecting Local Host")
         s = client_functions.connect_LocalH()
+
+    # test message to make sure the client connection and message building is working.
+    # dataList.append(testString)
 
     while True:
         print('waiting to receive')
@@ -206,12 +250,8 @@ def main(MCAST_GRP, MCAST_PORT, IS_ALL_GROUPS, RECV, SEND):
 
             print(data)
             try:
-                if SEND == "SSL":
-                    print("Sending on SSL")
-                    asyncio.run(ATAKSenders.SSLCoTSender(data))
-                elif SEND == "MCAST":
-                    print("Sending on Multicast")
-                    asyncio.run(ATAKSenders.MCASTCoTSender(data, MCAST_GRP, MCAST_PORT, IS_ALL_GROUPS, sock))
+                dataList.append(data)
+                MailMan()
             except TypeError:
                 pass
             finally:
@@ -232,10 +272,4 @@ def main(MCAST_GRP, MCAST_PORT, IS_ALL_GROUPS, RECV, SEND):
 
 
 if __name__ == "__main__":
-    MCAST_GRP = '239.2.3.1'
-    MCAST_PORT = 6969
-    IS_ALL_GROUPS = True
-    RECV = "LHOST"
-    SEND = "SSL"
-
-    main(MCAST_GRP, MCAST_PORT, IS_ALL_GROUPS, RECV, SEND)
+    main()

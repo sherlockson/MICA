@@ -1,8 +1,5 @@
 """Python Cursor on Target Module Class Definitions."""
 
-import datetime
-import uuid
-
 import gexml
 
 test_chat = """

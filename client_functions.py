@@ -1,64 +1,51 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""PyTAK Functions."""
-
 import asyncio
 import os
 import socket
 import ssl
 import struct
 
-
-import pytak
-import pytak.asyncio_dgram
-
-host = '52.222.45.68'
-port = 8089
 key = os.path.abspath(os.path.expanduser('~/Downloads/tak.key'))
-pem = os.path.abspath(os.path.expanduser('~/Downloads/tak.pem'))
+pem = os.path.abspath(os.path.expanduser('~/Downloads/tak.cer'))
 
-print(key, pem)
-
-async def protocol_factory(host, port):
+async def protocol_factory(SSL_PORT, SSL_GRP):
     """
-    Given a CoT Destination URL, create a Connection Class Instance for the given protocol.
+    Given a CoT Destination port and Host address, create a Connection Class Instance.
 
-    :param cot_url: CoT Destination URL
-    :param fts_token:
-    :return:
+    :param host: server address
+    :param port: server port
+    :return: reader, writer
     """
     reader = None
     writer = None
 
-    client_cafile = os.getenv("PYTAK_TLS_CLIENT_CAFILE")
-    client_ciphers = os.getenv(
-        "PYTAK_TLS_CLIENT_CIPHERS", pytak.DEFAULT_FIPS_CIPHERS)
 
     # SSL Context setup:
     ssl_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
     ssl_ctx.options |= ssl.OP_NO_TLSv1
     ssl_ctx.options |= ssl.OP_NO_TLSv1_1
-    ssl_ctx.set_ciphers(client_ciphers)
     ssl_ctx.check_hostname = False
     ssl_ctx.verify_mode = ssl.CERT_NONE
-
     ssl_ctx.load_cert_chain(pem, keyfile=key, password="atakatak")
 
-    if client_cafile:
-        ssl_ctx.load_verify_locations(cafile=client_cafile)
 
     ssl_ctx.check_hostname = False
     ssl_ctx.verify_mode = ssl.CERT_NONE
 
     ssl_ctx.check_hostname = False
 
-    reader, writer = await asyncio.open_connection(host, port, ssl=ssl_ctx)
+    reader, writer = await asyncio.open_connection(SSL_GRP, SSL_PORT, ssl=ssl_ctx)
 
     return reader, writer
 
 
 def connect_LocalH():
+    """
+    Create a UDP connection using Local host
+    :return: Local host socket
+    """
     HOST = '127.0.0.1'
     PORT = 8080
     ADDR = (HOST, PORT)
@@ -67,10 +54,20 @@ def connect_LocalH():
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind(ADDR)
 
+
     return sock
 
 
 def connect_MCAST(MCAST_GRP, MCAST_PORT, IS_ALL_GROUPS):
+    """
+    Given a CoT Mulitcast Destination port and Host address, create a Connection Class Instance.
+
+    :param MCAST_GRP: server address
+    :param MCAST_PORT: server port
+    :param IS_ALL_GROUPS: create socket connection to all address on port, or just a specific address and port.
+    :return: multicast socket
+    """
+
     MULTICAST_TTL = 2
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     # sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, MULTICAST_TTL)

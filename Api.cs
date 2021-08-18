@@ -16,7 +16,7 @@ namespace MICA
      *
      * Author - Andrew Holmes
      */
-    public static class WinApi
+    public static class Api
     {
         private static List<race> raceList; //Global list of all race objects
         private static List<interval> intervalList; //Global list of interval objects

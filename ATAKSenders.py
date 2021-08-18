@@ -5,12 +5,17 @@ import sys
 import client_functions
 import ATAKMain
 
-host = '52.222.45.68'
-port = 8089
 
-async def SSLCoTSender(bmsg):
+async def SSLCoTSender(bmsg, SSL_PORT, SSL_GRP):
+    """
+    Creates a COT message and Sends it via SSL to ATAK Server
+
+    :param bmsg: byte message to be decode, processed and sent.
+    :param SSL_PORT: server port
+    :param SSL_GRP: server address
+    """
     print("connecting to Server")
-    reader, writer = await client_functions.protocol_factory(host, port)
+    reader, writer = await client_functions.protocol_factory(SSL_PORT, SSL_GRP)
     msg = ATAKMain.dataParser(bmsg)
     if msg is not None:
         print("Preparing Message")
@@ -21,7 +26,16 @@ async def SSLCoTSender(bmsg):
 
 
 async def MCASTCoTSender(DATA, MCAST_GRP, MCAST_PORT, IS_ALL_GROUPS, sock=None):
-    MULTICAST_TTL = 2
+    """
+    Creates a COT message and Sends it via SSL to ATAK Server
+
+    :param bmsg: byte message to be decode, processed and sent.
+    :param SSL_PORT: server port
+    :param SSL_GRP: server address
+    :param IS_ALL_GROUPS: Determines if message is sent all groups on Port
+    :param sock: Socket for Server communication if already established.
+    """
+
     if sock is None:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         # sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, MULTICAST_TTL)
@@ -40,7 +54,7 @@ async def MCASTCoTSender(DATA, MCAST_GRP, MCAST_PORT, IS_ALL_GROUPS, sock=None):
 
     try:
         # Creates Cot Message to be sent as Byte stream
-        evt = "{}".format(ATAKMain.cot_builder(DATA))
+        evt = "{}".format(ATAKMain.dataParser(DATA))
         b_evt = evt.encode('utf-8')
 
         print(sys.stderr, 'sending "%s"' % b_evt)
