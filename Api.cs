@@ -69,6 +69,10 @@ namespace MICA
             Console.ForegroundColor = ConsoleColor.White;
         }
 
+        /*
+         * @void ConsoleInput - function to present the user with a menu of options to setup runtime enviornment
+         * @OUTPUT - networkChoice variable set, marathonId set, appropriate IP address and port set
+         */
         private static void ConsoleInput()
         {
             try
@@ -121,8 +125,8 @@ namespace MICA
         {
             try
             {
-                SetUrls();
-                SetupNetwork();
+                SetUrls(); //Set URLs after user input
+                SetupNetwork(); //Setup networks after user input
                 await GetRunners(); //Get and update global runner list
                 await GetIntervals(); //Get and update global interval list
                 await GetRaces(); //Get and update global race list
@@ -139,11 +143,15 @@ namespace MICA
             }
         }
 
+        /*
+         * @void SetupNetwork - Program utilizing the networkChoice variable to setup the appropriate network config
+         * @OUTPUT - appropriate socket created
+         */
         private static void SetupNetwork()
         {
             switch (networkChoice)
             {
-                case 0:
+                case 0: //Localhost setup
                     try
                     {
                         sender = new UdpSocket();
@@ -159,7 +167,7 @@ namespace MICA
                         throw;
                     }
 
-                case 1:
+                case 1: //Specific UDP socket setup
                     try
                     {
                         sender = new UdpSocket();
@@ -174,7 +182,7 @@ namespace MICA
                         Console.WriteLine(e);
                         throw;
                     }
-                case 2:
+                case 2: //Multicast setup
                     try
                     {
                         MulticastSender.McastAddress = IPAddress.Parse(address);
@@ -506,13 +514,6 @@ namespace MICA
                 {"111119", new Coordinate(39.8214304, -84.0207584)},
                 {"111125", new Coordinate(39.8074305, -84.0375252)}, //Estabrook drive
                 {"111126", new Coordinate(39.8100594, -84.0401771)}, //Metzger drive
-                {"385208", new Coordinate(39.989740, -83.030329)},
-                {"385210", new Coordinate(39.989518, -83.030379)},
-                {"385211", new Coordinate(39.989282, -83.030398)},
-                {"385212", new Coordinate(39.989009, -83.030175)},
-                {"385207", new Coordinate(39.988762, -83.030199)},
-                {"385209", new Coordinate(39.988375, -83.030221)},
-                {"385213", new Coordinate(39.988098, -83.030244)}
             };
 
             //For each interval in the racelist, map the coordinates to their respective locations
