@@ -13,15 +13,12 @@ import struct
 import pytak
 import pytak.asyncio_dgram
 
-
-# Server info for CEDER marathon
-os.environ['client_cert'] = r"C:\Users\pixel\RiderProjects\MICA\ceder.pem"
-os.environ['client_key'] = r"C:\Users\pixel\RiderProjects\MICA\ceder.key"
-
 host = '52.222.45.68'
 port = 8089
-key = r"C:\Users\pixel\RiderProjects\MICA\ceder.key"
-pem = r"C:\Users\pixel\RiderProjects\MICA\ceder.pem"
+key = os.path.abspath(os.path.expanduser('~/Downloads/tak.key'))
+pem = os.path.abspath(os.path.expanduser('~/Downloads/tak.pem'))
+
+print(key, pem)
 
 async def protocol_factory(host, port):
     """
@@ -33,10 +30,6 @@ async def protocol_factory(host, port):
     """
     reader = None
     writer = None
-
-    os.environ['client_cert'] = '/Users/Cruzethebear/Dropbox/My Mac (MacBook-Pro.lan)/Desktop/TAK/CERTs/peote.p12'
-    os.environ[
-        'client_key'] = '/Users/Cruzethebear/Dropbox/My Mac (MacBook-Pro.lan)/Desktop/TAK/CERTs/trustore-root.p12'
 
     client_cafile = os.getenv("PYTAK_TLS_CLIENT_CAFILE")
     client_ciphers = os.getenv(
